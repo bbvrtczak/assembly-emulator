@@ -20,7 +20,6 @@ public class AssemblyEmulator {
     }
 
     //TODO: add comma separators to instructions
-    //TODO: mov instruction not working
     public void run(){
         Scanner scanner = new Scanner(System.in);
         while(true){
@@ -51,6 +50,7 @@ public class AssemblyEmulator {
         if(reg2.matches("[0-9]+")){
             int value = Integer.parseInt(reg2);
             arithmeticService.add(reg1, value);
+            return;
         }
         arithmeticService.add(reg1, reg2);
     }
@@ -61,6 +61,7 @@ public class AssemblyEmulator {
         if(reg2.matches("[0-9]+")){
             int value = Integer.parseInt(reg2);
             arithmeticService.sub(reg1, value);
+            return;
         }
         arithmeticService.sub(reg1, reg2);
     }
@@ -71,6 +72,7 @@ public class AssemblyEmulator {
         if(reg2.matches("[0-9]+")){
             int value = Integer.parseInt(reg2);
             transferService.mov(reg1, value);
+            return;
         }
         transferService.mov(reg1, reg2);
     }
