@@ -22,4 +22,15 @@ public class Register {
         tmpValue &= 0x00FF;
         return tmpValue;
     }
+
+    public void setNH(int hValue){
+        hValue <<= 8;
+        this.value &= 0x00FF;
+        this.value |= hValue;
+    }
+
+    public void setNL(int nValue){
+        this.value &= 0xFF00;
+        this.value |= nValue;
+    }
 }

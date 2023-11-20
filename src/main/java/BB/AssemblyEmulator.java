@@ -7,36 +7,48 @@ import BB.service.TransferService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AssemblyEmulator {
     private final Memory memory;
     private final ArithmeticService arithmeticService;
     private final TransferService transferService;
 
+    private final Pattern instructionRegexPattern;
+
     public AssemblyEmulator() {
         this.memory = new Memory();
         this.arithmeticService = new ArithmeticService(memory);
         this.transferService = new TransferService(memory);
+        instructionRegexPattern = Pattern.compile("^[A-Za-z]{3} \\w+, \\w+$");
     }
 
     //TODO: add comma separators to instructions
     public void run(){
         Scanner scanner = new Scanner(System.in);
+        Matcher matcher;
         while(true){
             memory.printRegisters();
             String command = scanner.nextLine();
+            matcher = instructionRegexPattern.matcher(command);
+            if (!matcher.matches()){
+                System.out.println("\u001B[31m" + "Error: Wrong instruction " +
+                        "syntax!" + "\u001B[0m");
+                continue;
+            }
             List<String> splitCommandList = Arrays.asList(
                     command.split(" ", -1));
 
             switch(splitCommandList.get(0)){
                 case "add":
-                    this.add(splitCommandList);
+                    this.parseAddCommand(splitCommandList);
                     break;
                 case "sub":
-                    this.sub(splitCommandList);
+                    this.parseSubCommand(splitCommandList);
                     break;
                 case "mov":
-                    this.mov(splitCommandList);
+                    this.parseMovCommand(splitCommandList);
                     break;
                 default:
                     System.out.println("Instruction not recognized!");
@@ -44,7 +56,7 @@ public class AssemblyEmulator {
         }
     }
 
-    private void add(List<String> splitCommandList){
+    private void parseAddCommand(List<String> splitCommandList){
         String reg1 = splitCommandList.get(1);
         String reg2 = splitCommandList.get(2);
         if(reg2.matches("[0-9]+")){
@@ -55,7 +67,7 @@ public class AssemblyEmulator {
         arithmeticService.add(reg1, reg2);
     }
 
-    private void sub(List<String> splitCommandList){
+    private void parseSubCommand(List<String> splitCommandList){
         String reg1 = splitCommandList.get(1);
         String reg2 = splitCommandList.get(2);
         if(reg2.matches("[0-9]+")){
@@ -66,7 +78,7 @@ public class AssemblyEmulator {
         arithmeticService.sub(reg1, reg2);
     }
 
-    private void mov(List<String> splitCommandList){
+    private void parseMovCommand(List<String> splitCommandList){
         String reg1 = splitCommandList.get(1);
         String reg2 = splitCommandList.get(2);
         if(reg2.matches("[0-9]+")){
