@@ -6,6 +6,9 @@ import BB.AssemblyEmulator;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class Gui {
     private final JFrame frame;
@@ -39,7 +42,7 @@ public class Gui {
     public void createUI(){
         createRegisterSection();
         createInputSection();
-        this.frame.setLayout(new FlowLayout());
+        this.frame.setLayout(new FlowLayout(FlowLayout.CENTER,100,20));
         this.frame.setVisible(true);
     }
 
@@ -131,12 +134,32 @@ public class Gui {
     }
 
     private void createInputSection(){
-        JTextArea inputArea = new JTextArea(5, 20);
+        JTextArea inputArea = new JTextArea(3, 10);
         JButton submitInputButton = new JButton("Enter");
+
+        inputArea.setFont(new Font("Arial", Font.PLAIN, 28));
+        submitInputButton.setFont(new Font("Arial", Font.PLAIN, 42));
 
         submitInputButton.addActionListener(e -> {
             String enteredCommand = inputArea.getText();
             assemblyEmulator.parseCommand(enteredCommand);
+            inputArea.setText("");
+        });
+
+        inputArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if (e.isShiftDown()) {
+                        inputArea.append("\n");
+                    } else {
+                        String enteredCommand = inputArea.getText();
+                        assemblyEmulator.parseCommand(enteredCommand);
+                        inputArea.setText("");
+                    }
+                    e.consume(); // Prevents the default behavior of Enter key
+                }
+            }
         });
 
         JPanel inputPanel = new JPanel(new GridLayout(1, 2, 50, 15));

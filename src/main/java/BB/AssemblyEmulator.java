@@ -29,7 +29,7 @@ public class AssemblyEmulator {
     public void run(){
         gui.run();
 
-        this.runCommandLineApp();
+        //this.runCommandLineApp();
     }
 
     private void updateRegValuesInUI(){
