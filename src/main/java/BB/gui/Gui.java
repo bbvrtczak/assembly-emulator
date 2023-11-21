@@ -2,20 +2,27 @@ package BB.gui;
 
 import javax.swing.*;
 
+import BB.AssemblyEmulator;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 import java.awt.*;
 
 public class Gui {
     private final JFrame frame;
+    private JLabel axValueLabel;
+    private JLabel bxValueLabel;
+    private JLabel cxValueLabel;
+    private JLabel dxValueLabel;
+    private final AssemblyEmulator assemblyEmulator;
 
-    public Gui() {
+    public Gui(AssemblyEmulator assemblyEmulator) {
         try {
             UIManager.setLookAndFeel( new FlatDarculaLaf() );
         } catch( Exception ex ) {
             System.err.println("Failed to initialize theme. Using fallback.");
         }
         this.frame = new JFrame("Assembly emulator");
+        this.assemblyEmulator = assemblyEmulator;
     }
 
     public void run(){
@@ -30,6 +37,13 @@ public class Gui {
     }
 
     public void createUI(){
+        createRegisterSection();
+        createInputSection();
+        this.frame.setLayout(new FlowLayout());
+        this.frame.setVisible(true);
+    }
+
+    private void createRegisterSection(){
         // creating top panel with register values and labels
         JPanel regsPanel = new JPanel(new GridLayout(2, 4, 50, 15));
 
@@ -51,33 +65,32 @@ public class Gui {
         cxPanel.setBackground(new Color(90, 93, 94));
         dxPanel.setBackground(new Color(90, 93, 94));
 
-        // assigning base register values
-        JLabel axValueLabel = new JLabel("0x0000");
-        JLabel bxValueLabel = new JLabel("0x0000");
-        JLabel cxValueLabel = new JLabel("0x0000");
-        JLabel dxValueLabel = new JLabel("0x0000");
+        this.axValueLabel = new JLabel("0x0000");
+        this.bxValueLabel = new JLabel("0x0000");
+        this.cxValueLabel = new JLabel("0x0000");
+        this.dxValueLabel = new JLabel("0x0000");
 
         // setting font for register values
-        axValueLabel.setFont(new Font("Arial", Font.PLAIN, 48));
-        bxValueLabel.setFont(new Font("Arial", Font.PLAIN, 48));
-        cxValueLabel.setFont(new Font("Arial", Font.PLAIN, 48));
-        dxValueLabel.setFont(new Font("Arial", Font.PLAIN, 48));
+        this.axValueLabel.setFont(new Font("Arial", Font.PLAIN, 48));
+        this.bxValueLabel.setFont(new Font("Arial", Font.PLAIN, 48));
+        this.cxValueLabel.setFont(new Font("Arial", Font.PLAIN, 48));
+        this.dxValueLabel.setFont(new Font("Arial", Font.PLAIN, 48));
 
         // centering register values in boxes
-        axValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        axValueLabel.setVerticalAlignment(SwingConstants.CENTER);
-        bxValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        bxValueLabel.setVerticalAlignment(SwingConstants.CENTER);
-        cxValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        cxValueLabel.setVerticalAlignment(SwingConstants.CENTER);
-        dxValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        dxValueLabel.setVerticalAlignment(SwingConstants.CENTER);
+        this.axValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.axValueLabel.setVerticalAlignment(SwingConstants.CENTER);
+        this.bxValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.bxValueLabel.setVerticalAlignment(SwingConstants.CENTER);
+        this.cxValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.cxValueLabel.setVerticalAlignment(SwingConstants.CENTER);
+        this.dxValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        this.dxValueLabel.setVerticalAlignment(SwingConstants.CENTER);
 
         // adding register value labels to boxes
-        axPanel.add(axValueLabel);
-        bxPanel.add(bxValueLabel);
-        cxPanel.add(cxValueLabel);
-        dxPanel.add(dxValueLabel);
+        axPanel.add(this.axValueLabel);
+        bxPanel.add(this.bxValueLabel);
+        cxPanel.add(this.cxValueLabel);
+        dxPanel.add(this.dxValueLabel);
 
         // setting register boxes labels
         JLabel axLabel = new JLabel("AX");
@@ -115,7 +128,54 @@ public class Gui {
 
         // adding main panel to frame
         this.frame.add(regsPanel);
-        this.frame.setLayout(new FlowLayout());
-        this.frame.setVisible(true);
+    }
+
+    private void createInputSection(){
+        JTextArea inputArea = new JTextArea(5, 20);
+        JButton submitInputButton = new JButton("Enter");
+
+        submitInputButton.addActionListener(e -> {
+            String enteredCommand = inputArea.getText();
+            assemblyEmulator.parseCommand(enteredCommand);
+        });
+
+        JPanel inputPanel = new JPanel(new GridLayout(1, 2, 50, 15));
+        inputPanel.add(inputArea);
+        inputPanel.add(submitInputButton);
+        this.frame.add(inputPanel);
+    }
+
+    public void setRegValue(String reg, int value){
+        switch(reg) {
+            case "ax":
+                setAxValue(value);
+                break;
+            case "bx":
+                setBxValue(value);
+                break;
+            case "cx":
+                setCxValue(value);
+                break;
+            case "dx":
+                setDxValue(value);
+                break;
+            default:
+                break;
+        }
+    }
+    private void setAxValue(int value){
+        this.axValueLabel.setText(String.format("0x%04X", value));
+    }
+
+    private void setBxValue(int value){
+        this.bxValueLabel.setText(String.format("0x%04X", value));
+    }
+
+    private void setCxValue(int value){
+        this.cxValueLabel.setText(String.format("0x%04X", value));
+    }
+
+    private void setDxValue(int value){
+        this.dxValueLabel.setText(String.format("0x%04X", value));
     }
 }
