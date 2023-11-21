@@ -109,8 +109,7 @@ public class ArithmeticService implements IArithmetics {
         if((reg1.toLowerCase().charAt(1) == 'h' ||
                 reg1.toLowerCase().charAt(1) == 'l') &&
                 (reg2.toLowerCase().charAt(1) == 'x')){
-            System.out.println("\u001B[31m" + "Error: Wrong registers!"
-                    + "\u001B[0m");
+            System.err.println("Error: Wrong registers!");
             return true;
         }
         return false;
@@ -120,8 +119,7 @@ public class ArithmeticService implements IArithmetics {
         if((reg1.toLowerCase().charAt(1) == 'h' ||
                 reg1.toLowerCase().charAt(1) == 'l') &&
                 (value > 0xFF)){
-            System.out.println("\u001B[31m" + "Error: Wrong value!"
-                    + "\u001B[0m");
+            System.err.println("Error: Wrong value!");
             return true;
         }
         return false;

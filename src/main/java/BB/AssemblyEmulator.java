@@ -1,5 +1,6 @@
 package BB;
 
+import BB.gui.Gui;
 import BB.service.ArithmeticService;
 import BB.memory.Memory;
 import BB.service.TransferService;
@@ -14,7 +15,6 @@ public class AssemblyEmulator {
     private final Memory memory;
     private final ArithmeticService arithmeticService;
     private final TransferService transferService;
-
     private final Pattern instructionRegexPattern;
 
     public AssemblyEmulator() {
@@ -24,36 +24,11 @@ public class AssemblyEmulator {
         instructionRegexPattern = Pattern.compile("^[A-Za-z]{3} \\w+, \\w+$");
     }
 
-    //TODO: add comma separators to instructions
     public void run(){
-        Scanner scanner = new Scanner(System.in);
-        Matcher matcher;
-        while(true){
-            memory.printRegisters();
-            String command = scanner.nextLine();
-            matcher = instructionRegexPattern.matcher(command);
-            if (!matcher.matches()){
-                System.out.println("\u001B[31m" + "Error: Wrong instruction " +
-                        "syntax!" + "\u001B[0m");
-                continue;
-            }
-            List<String> splitCommandList = Arrays.asList(
-                    command.split(" ", -1));
+        Gui gui = new Gui();
+        gui.run();
 
-            switch(splitCommandList.get(0)){
-                case "add":
-                    this.parseAddCommand(splitCommandList);
-                    break;
-                case "sub":
-                    this.parseSubCommand(splitCommandList);
-                    break;
-                case "mov":
-                    this.parseMovCommand(splitCommandList);
-                    break;
-                default:
-                    System.out.println("Instruction not recognized!");
-            }
-        }
+        //this.runCommandLineApp();
     }
 
     private void parseAddCommand(List<String> splitCommandList){
@@ -87,5 +62,35 @@ public class AssemblyEmulator {
             return;
         }
         transferService.mov(reg1, reg2);
+    }
+
+    public void runCommandLineApp(){
+        Scanner scanner = new Scanner(System.in);
+        Matcher matcher;
+        while(true){
+            memory.printRegisters();
+            String command = scanner.nextLine();
+            matcher = instructionRegexPattern.matcher(command);
+            if (!matcher.matches()){
+                System.err.println("Error: Wrong instruction syntax!");
+                continue;
+            }
+            List<String> splitCommandList = Arrays.asList(
+                    command.split(" ", -1));
+
+            switch(splitCommandList.get(0)){
+                case "add":
+                    this.parseAddCommand(splitCommandList);
+                    break;
+                case "sub":
+                    this.parseSubCommand(splitCommandList);
+                    break;
+                case "mov":
+                    this.parseMovCommand(splitCommandList);
+                    break;
+                default:
+                    System.err.println("Instruction not recognized!");
+            }
+        }
     }
 }
