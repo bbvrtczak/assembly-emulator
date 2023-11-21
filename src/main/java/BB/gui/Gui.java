@@ -8,7 +8,6 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 public class Gui {
     private final JFrame frame;
@@ -68,6 +67,7 @@ public class Gui {
         cxPanel.setBackground(new Color(90, 93, 94));
         dxPanel.setBackground(new Color(90, 93, 94));
 
+        // setting values for registers
         this.axValueLabel = new JLabel("0x0000");
         this.bxValueLabel = new JLabel("0x0000");
         this.cxValueLabel = new JLabel("0x0000");
