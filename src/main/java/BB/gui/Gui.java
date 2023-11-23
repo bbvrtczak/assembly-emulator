@@ -40,6 +40,7 @@ public class Gui {
 
     public void createUI(){
         createRegisterSection();
+        createModeSection();
         createInputSection();
         this.frame.setLayout(new FlowLayout(FlowLayout.CENTER,100,20));
         this.frame.setVisible(true);
@@ -133,6 +134,28 @@ public class Gui {
         this.frame.add(regsPanel);
     }
 
+    private void createModeSection(){
+        JButton singleExecutionButton = new JButton("Single instruction execution");
+        JButton overallExecutionButton = new JButton("Overall execution");
+        JPanel modePanel = new JPanel(new GridLayout(2, 1, 50, 15));
+
+        singleExecutionButton.setFont(new Font("Arial", Font.PLAIN, 28));
+        overallExecutionButton.setFont(new Font("Arial", Font.PLAIN, 28));
+
+        singleExecutionButton.addActionListener(e -> {
+            this.assemblyEmulator.setParsingMode(0);
+        });
+
+        overallExecutionButton.addActionListener(e -> {
+            this.assemblyEmulator.setParsingMode(1);
+        });
+
+        modePanel.add(singleExecutionButton);
+        modePanel.add(overallExecutionButton);
+
+        this.frame.add(modePanel);
+    }
+
     private void createInputSection(){
         JTextArea inputArea = new JTextArea(3, 10);
         JButton submitInputButton = new JButton("Enter");
@@ -186,6 +209,7 @@ public class Gui {
                 break;
         }
     }
+
     private void setAxValue(int value){
         this.axValueLabel.setText(String.format("0x%04X", value));
     }

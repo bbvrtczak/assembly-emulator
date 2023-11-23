@@ -73,7 +73,7 @@ public class Memory {
                 this.cx.setValue(value);
                 break;
             case "ch":
-                this.ax.setNH(value);
+                this.cx.setNH(value);
                 break;
             case "cl":
                 this.cx.setNL(value);

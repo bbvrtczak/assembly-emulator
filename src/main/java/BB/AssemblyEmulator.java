@@ -7,7 +7,6 @@ import BB.service.TransferService;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +16,7 @@ public class AssemblyEmulator {
     private final TransferService transferService;
     private final Pattern instructionRegexPattern;
     private final Gui gui;
+    private int mode;
 
     public AssemblyEmulator() {
         this.memory = new Memory();
@@ -24,12 +24,11 @@ public class AssemblyEmulator {
         this.transferService = new TransferService(memory);
         this.gui = new Gui(this);
         instructionRegexPattern = Pattern.compile("^[A-Za-z]{3} \\w+, \\w+$");
+        this.mode = 0;
     }
 
     public void run(){
         gui.run();
-
-        //this.runCommandLineApp();
     }
 
     private void updateRegValuesInUI(){
@@ -40,6 +39,9 @@ public class AssemblyEmulator {
     }
 
     public void parseCommand(String command){
+        if(command.contains("\n")){
+            parseMultiLineCommand(command);
+        }
         Matcher matcher;
         matcher = instructionRegexPattern.matcher(command);
         if (!matcher.matches()){
@@ -50,84 +52,70 @@ public class AssemblyEmulator {
         List<String> splitCommandList = Arrays.asList(
                 command.split(" ", -1));
 
-        switch(splitCommandList.get(0)){
-            case "add":
-                this.parseAddCommand(splitCommandList);
-                break;
-            case "sub":
-                this.parseSubCommand(splitCommandList);
-                break;
-            case "mov":
-                this.parseMovCommand(splitCommandList);
-                break;
-            default:
-                System.err.println("Instruction not recognized!");
-        }
+        this.executeCommand(splitCommandList);
         this.updateRegValuesInUI();
     }
 
-    private void parseAddCommand(List<String> splitCommandList){
-        String reg1 = splitCommandList.get(1);
-        String reg2 = splitCommandList.get(2);
-        if(reg2.matches("[0-9]+")){
-            int value = Integer.parseInt(reg2);
-            arithmeticService.add(reg1, value);
-            return;
+    private void parseMultiLineCommand(String command){
+        String[] allCommandsList = command.split("\n", -1);
+        for (int i = 0; i < allCommandsList.length; i++){
+            allCommandsList[i] = allCommandsList[i].replaceAll("\n", "");
         }
-        arithmeticService.add(reg1, reg2);
-    }
-
-    private void parseSubCommand(List<String> splitCommandList){
-        String reg1 = splitCommandList.get(1);
-        String reg2 = splitCommandList.get(2);
-        if(reg2.matches("[0-9]+")){
-            int value = Integer.parseInt(reg2);
-            arithmeticService.sub(reg1, value);
-            return;
+        if(mode == 0){
+            //TODO: add parsing for single instruction in multi line input
         }
-        arithmeticService.sub(reg1, reg2);
-    }
-
-    private void parseMovCommand(List<String> splitCommandList){
-        String reg1 = splitCommandList.get(1);
-        String reg2 = splitCommandList.get(2);
-        if(reg2.matches("[0-9]+")){
-            int value = Integer.parseInt(reg2);
-            transferService.mov(reg1, value);
-            return;
-        }
-        transferService.mov(reg1, reg2);
-    }
-
-    public void runCommandLineApp(){
-        Scanner scanner = new Scanner(System.in);
-        Matcher matcher;
-        while(true){
-            memory.printRegisters();
-            String command = scanner.nextLine();
-            matcher = instructionRegexPattern.matcher(command);
-            if (!matcher.matches()){
-                System.err.println("Error: Wrong instruction syntax!");
-                continue;
-            }
-            command = command.replaceAll(",", "");
-            List<String> splitCommandList = Arrays.asList(
-                    command.split(" ", -1));
-
-
-            switch(splitCommandList.get(0)){
-                case "add":
-                    this.parseAddCommand(splitCommandList);
-                    break;
-                case "sub":
-                    this.parseSubCommand(splitCommandList);
-                    break;
-                case "mov":
-                    this.parseMovCommand(splitCommandList);
-                    break;
-                default:
-                    System.err.println("Instruction not recognized!");
+        else {
+            for (String singleCommand : allCommandsList) {
+                parseCommand(singleCommand);
             }
         }
+    }
+
+    private void executeCommand(List<String> splitCommandList){
+        String instruction = splitCommandList.get(0);
+        String reg1 = splitCommandList.get(1);
+        String reg2 = splitCommandList.get(2);
+        if(reg2.matches("[0-9]+")){
+            int value = Integer.parseInt(reg2);
+            executeRegValueCommand(reg1, value, instruction);
+            return;
+        }
+        executeRegRegCommand(reg1, reg2, instruction);
+    }
+
+    private void executeRegValueCommand(String reg1, int value,
+                                        String instruction){
+        switch(instruction){
+            case "add":
+                arithmeticService.add(reg1, value);
+                break;
+            case "sub":
+                arithmeticService.sub(reg1, value);
+                break;
+            case "mov":
+                transferService.mov(reg1, value);
+                break;
+            default:
+        }
+    }
+
+    private void executeRegRegCommand(String reg1, String reg2,
+                                        String instruction){
+        switch(instruction){
+            case "add":
+                arithmeticService.add(reg1, reg2);
+                break;
+            case "sub":
+                arithmeticService.sub(reg1, reg2);
+                break;
+            case "mov":
+                transferService.mov(reg1, reg2);
+                break;
+            default:
+        }
+    }
+
+    public void setParsingMode(int mode){
+        this.mode = mode;
     }
 }
