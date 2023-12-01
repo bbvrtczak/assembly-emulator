@@ -163,11 +163,9 @@ public class Gui {
         inputArea.setFont(new Font("Arial", Font.PLAIN, 28));
         submitInputButton.setFont(new Font("Arial", Font.PLAIN, 42));
 
-        submitInputButton.addActionListener(e -> {
-            String enteredCommand = inputArea.getText();
-            assemblyEmulator.parseCommand(enteredCommand);
-            inputArea.setText("");
-        });
+        submitInputButton.addActionListener(e ->
+                this.submitInputAndParseCommand(inputArea));
+
 
         inputArea.addKeyListener(new KeyAdapter() {
             @Override
@@ -176,9 +174,7 @@ public class Gui {
                     if (e.isShiftDown()) {
                         inputArea.append("\n");
                     } else {
-                        String enteredCommand = inputArea.getText();
-                        assemblyEmulator.parseCommand(enteredCommand);
-                        inputArea.setText("");
+                        submitInputAndParseCommand(inputArea);
                     }
                     e.consume(); // Prevents the default behavior of Enter key
                 }
@@ -189,6 +185,18 @@ public class Gui {
         inputPanel.add(inputArea);
         inputPanel.add(submitInputButton);
         this.frame.add(inputPanel);
+    }
+
+    private void submitInputAndParseCommand(JTextArea inputArea){
+        String enteredCommand = inputArea.getText();
+        int newLineIndex = enteredCommand.indexOf("\n");
+        if(newLineIndex == -1 || this.assemblyEmulator.getParsingMode() == 1){
+            inputArea.setText("");
+        }
+        else {
+            inputArea.setText(enteredCommand.substring(newLineIndex + 1));
+        }
+        assemblyEmulator.parseCommand(enteredCommand);
     }
 
     public void setRegValue(String reg, int value){

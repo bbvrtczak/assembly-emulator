@@ -4,6 +4,8 @@ import BB.gui.Gui;
 import BB.service.ArithmeticService;
 import BB.memory.Memory;
 import BB.service.TransferService;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +18,9 @@ public class AssemblyEmulator {
     private final TransferService transferService;
     private final Pattern instructionRegexPattern;
     private final Gui gui;
-    private int mode;
+    @Getter
+    @Setter
+    private int parsingMode;
 
     public AssemblyEmulator() {
         this.memory = new Memory();
@@ -24,7 +28,7 @@ public class AssemblyEmulator {
         this.transferService = new TransferService(memory);
         this.gui = new Gui(this);
         instructionRegexPattern = Pattern.compile("^[A-Za-z]{3} \\w+, \\w+$");
-        this.mode = 0;
+        this.parsingMode = 0;
     }
 
     public void run(){
@@ -61,8 +65,12 @@ public class AssemblyEmulator {
         for (int i = 0; i < allCommandsList.length; i++){
             allCommandsList[i] = allCommandsList[i].replaceAll("\n", "");
         }
-        if(mode == 0){
-            //TODO: add parsing for single instruction in multi line input
+        List<String> commandList = Arrays.asList(allCommandsList);
+        if(this.parsingMode == 0){
+            if(!commandList.isEmpty()){
+                parseCommand(commandList.get(0));
+                commandList.remove(0);
+            }
         }
         else {
             for (String singleCommand : allCommandsList) {
@@ -113,9 +121,5 @@ public class AssemblyEmulator {
                 break;
             default:
         }
-    }
-
-    public void setParsingMode(int mode){
-        this.mode = mode;
     }
 }
