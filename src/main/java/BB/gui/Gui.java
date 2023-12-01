@@ -46,6 +46,8 @@ public class Gui {
         this.frame.setVisible(true);
     }
 
+    // TODO: change single line execution so that it makes a button to iterate through commands
+
     private void createRegisterSection(){
         // creating top panel with register values and labels
         JPanel regsPanel = new JPanel(new GridLayout(2, 4, 50, 15));
@@ -158,14 +160,21 @@ public class Gui {
 
     private void createInputSection(){
         JTextArea inputArea = new JTextArea(3, 10);
+
         JButton submitInputButton = new JButton("Enter");
+        JButton resetButton = new JButton("Reset");
 
         inputArea.setFont(new Font("Arial", Font.PLAIN, 28));
         submitInputButton.setFont(new Font("Arial", Font.PLAIN, 42));
+        resetButton.setFont(new Font("Arial", Font.PLAIN, 42));
 
         submitInputButton.addActionListener(e ->
                 this.submitInputAndParseCommand(inputArea));
 
+        resetButton.addActionListener(e ->
+                inputArea.setText(""));
+
+        // TODO: create line numbering for tracking single line execution
 
         inputArea.addKeyListener(new KeyAdapter() {
             @Override
@@ -184,6 +193,7 @@ public class Gui {
         JPanel inputPanel = new JPanel(new GridLayout(1, 2, 50, 15));
         inputPanel.add(inputArea);
         inputPanel.add(submitInputButton);
+        inputPanel.add(resetButton);
         this.frame.add(inputPanel);
     }
 
