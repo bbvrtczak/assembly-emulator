@@ -1,13 +1,13 @@
 package BB.gui;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import BB.AssemblyEmulator;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class Gui {
     private final JFrame frame;
@@ -15,6 +15,10 @@ public class Gui {
     private JLabel bxValueLabel;
     private JLabel cxValueLabel;
     private JLabel dxValueLabel;
+    private JTextArea inputArea;
+    private JTextArea lineNumbers;
+    private JButton submitInputButton;
+    private int currentLine = 0;
     private final AssemblyEmulator assemblyEmulator;
 
     public Gui(AssemblyEmulator assemblyEmulator) {
@@ -45,8 +49,6 @@ public class Gui {
         this.frame.setLayout(new FlowLayout(FlowLayout.CENTER,100,20));
         this.frame.setVisible(true);
     }
-
-    // TODO: change single line execution so that it makes a button to iterate through commands
 
     private void createRegisterSection(){
         // creating top panel with register values and labels
@@ -144,12 +146,18 @@ public class Gui {
         singleExecutionButton.setFont(new Font("Arial", Font.PLAIN, 28));
         overallExecutionButton.setFont(new Font("Arial", Font.PLAIN, 28));
 
+        singleExecutionButton.setBackground(new Color(72,101,129));
+
         singleExecutionButton.addActionListener(e -> {
             this.assemblyEmulator.setParsingMode(0);
+            singleExecutionButton.setBackground(new Color(72,101,129));
+            overallExecutionButton.setBackground(new Color(83,85,87));
         });
 
         overallExecutionButton.addActionListener(e -> {
             this.assemblyEmulator.setParsingMode(1);
+            overallExecutionButton.setBackground(new Color(72,101,129));
+            singleExecutionButton.setBackground(new Color(83,85,87));
         });
 
         modePanel.add(singleExecutionButton);
@@ -159,54 +167,120 @@ public class Gui {
     }
 
     private void createInputSection(){
-        JTextArea inputArea = new JTextArea(3, 10);
-
-        JButton submitInputButton = new JButton("Enter");
+        this.inputArea = new JTextArea(5, 10);
+        this.lineNumbers = new JTextArea(1,2);
+        this.submitInputButton = new JButton("Enter");
         JButton resetButton = new JButton("Reset");
 
-        inputArea.setFont(new Font("Arial", Font.PLAIN, 28));
+        inputArea.setFont(new Font("Arial", Font.PLAIN, 24));
+        lineNumbers.setFont(new Font("Arial", Font.PLAIN, 24));
         submitInputButton.setFont(new Font("Arial", Font.PLAIN, 42));
         resetButton.setFont(new Font("Arial", Font.PLAIN, 42));
 
-        submitInputButton.addActionListener(e ->
-                this.submitInputAndParseCommand(inputArea));
+        lineNumbers.setEditable(false);
+        lineNumbers.setFocusable(false);
 
-        resetButton.addActionListener(e ->
-                inputArea.setText(""));
+        JScrollPane scrollPane = new JScrollPane(inputArea);
+        scrollPane.setRowHeaderView(lineNumbers);
+        scrollPane.setBorder(null);
+        scrollPane.setViewportBorder(null);
 
-        // TODO: create line numbering for tracking single line execution
-
-        inputArea.addKeyListener(new KeyAdapter() {
+        inputArea.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if (e.isShiftDown()) {
-                        inputArea.append("\n");
-                    } else {
-                        submitInputAndParseCommand(inputArea);
-                    }
-                    e.consume(); // Prevents the default behavior of Enter key
-                }
+            public void insertUpdate(DocumentEvent e) {
+                updateLineNumbers();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateLineNumbers();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateLineNumbers();
             }
         });
 
+        submitInputButton.addActionListener(e -> {
+            this.submitInputAndParseCommand(inputArea);
+            if(assemblyEmulator.getParsingMode() == 0) {
+                this.currentLine++;
+            }
+            updateLineNumbers();
+        });
+        
+        resetButton.addActionListener(e -> {
+            inputArea.setText("");
+            resetRegValues();
+            currentLine = 0;
+        });
+
         JPanel inputPanel = new JPanel(new GridLayout(1, 2, 50, 15));
-        inputPanel.add(inputArea);
+        inputPanel.add(scrollPane);
         inputPanel.add(submitInputButton);
         inputPanel.add(resetButton);
         this.frame.add(inputPanel);
     }
 
+    private void updateLineNumbers() {
+        SwingUtilities.invokeLater(() -> {
+            int lineCount = this.inputArea.getLineCount();
+            StringBuilder numbers = new StringBuilder();
+            for (int i = 1; i <= lineCount; i++) {
+                numbers.append(i);
+                if(i == currentLine){
+                    numbers.append(">");
+                }
+                numbers.append("\n");
+            }
+            lineNumbers.setText(numbers.toString());
+        });
+    }
+
     private void submitInputAndParseCommand(JTextArea inputArea){
         String enteredCommand = inputArea.getText();
-        int newLineIndex = enteredCommand.indexOf("\n");
-        if(newLineIndex == -1 || this.assemblyEmulator.getParsingMode() == 1){
-            inputArea.setText("");
+        int currentCommandStartIndex;
+        int currentCommandEndIndex;
+
+        if(currentLine == 0){
+            currentCommandStartIndex = 0;
+            currentCommandEndIndex = ordinalIndexOf(
+                    enteredCommand, "\n", this.currentLine);
         }
         else {
-            inputArea.setText(enteredCommand.substring(newLineIndex + 1));
+            currentCommandStartIndex = ordinalIndexOf(
+                    enteredCommand, "\n", this.currentLine) + 1;
+            currentCommandEndIndex = ordinalIndexOf(
+                    enteredCommand, "\n", this.currentLine + 1);
+            if(currentCommandEndIndex == -1){
+                currentCommandEndIndex = enteredCommand.length();
+            }
         }
-        assemblyEmulator.parseCommand(enteredCommand);
+
+        int newLineIndex = enteredCommand.indexOf("\n");
+        if(newLineIndex == -1 || this.assemblyEmulator.getParsingMode() == 1){
+            assemblyEmulator.parseCommand(enteredCommand);
+        }
+        else {
+            String currentCommand = enteredCommand.substring(
+                    currentCommandStartIndex, currentCommandEndIndex);
+            assemblyEmulator.parseCommand(currentCommand);
+        }
+    }
+
+    private int ordinalIndexOf(String str, String substr, int n) {
+        int pos = str.indexOf(substr);
+        while (--n > 0 && pos != -1)
+            pos = str.indexOf(substr, pos + 1);
+        return pos;
+    }
+
+    private void resetRegValues(){
+        this.setAxValue(0);
+        this.setBxValue(0);
+        this.setCxValue(0);
+        this.setDxValue(0);
     }
 
     public void setRegValue(String reg, int value){
