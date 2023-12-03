@@ -17,7 +17,6 @@ public class Gui {
     private JLabel dxValueLabel;
     private JTextArea inputArea;
     private JTextArea lineNumbers;
-    private JButton submitInputButton;
     private int currentLine = 0;
     private final AssemblyEmulator assemblyEmulator;
 
@@ -146,6 +145,9 @@ public class Gui {
         singleExecutionButton.setFont(new Font("Arial", Font.PLAIN, 28));
         overallExecutionButton.setFont(new Font("Arial", Font.PLAIN, 28));
 
+        singleExecutionButton.setFocusPainted(false);
+        overallExecutionButton.setFocusPainted(false);
+
         singleExecutionButton.setBackground(new Color(72,101,129));
 
         singleExecutionButton.addActionListener(e -> {
@@ -169,8 +171,11 @@ public class Gui {
     private void createInputSection(){
         this.inputArea = new JTextArea(5, 10);
         this.lineNumbers = new JTextArea(1,2);
-        this.submitInputButton = new JButton("Enter");
+        JButton submitInputButton = new JButton("Enter");
         JButton resetButton = new JButton("Reset");
+
+        submitInputButton.setFocusPainted(false);
+        resetButton.setFocusPainted(false);
 
         inputArea.setFont(new Font("Arial", Font.PLAIN, 24));
         lineNumbers.setFont(new Font("Arial", Font.PLAIN, 24));
@@ -209,7 +214,7 @@ public class Gui {
             }
             updateLineNumbers();
         });
-        
+
         resetButton.addActionListener(e -> {
             inputArea.setText("");
             resetRegValues();
