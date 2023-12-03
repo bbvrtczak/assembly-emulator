@@ -8,6 +8,7 @@ import BB.AssemblyEmulator;
 import com.formdev.flatlaf.FlatDarculaLaf;
 
 import java.awt.*;
+import java.io.*;
 
 public class Gui {
     private final JFrame frame;
@@ -45,6 +46,7 @@ public class Gui {
         createRegisterSection();
         createModeSection();
         createInputSection();
+        createSaveAndLoadSection();
         this.frame.setLayout(new FlowLayout(FlowLayout.CENTER,100,20));
         this.frame.setVisible(true);
     }
@@ -226,6 +228,57 @@ public class Gui {
         inputPanel.add(submitInputButton);
         inputPanel.add(resetButton);
         this.frame.add(inputPanel);
+    }
+
+    private void createSaveAndLoadSection(){
+        JPanel saveLoadPanel = new JPanel(new GridLayout(1,2, 0, 100));
+        JButton saveButton = new JButton("Save");
+        JButton loadButton = new JButton("Load");
+
+        saveButton.setFont(new Font("Arial", Font.PLAIN, 28));
+        loadButton.setFont(new Font("Arial", Font.PLAIN, 28));
+
+        saveButton.setFocusPainted(false);
+        loadButton.setFocusPainted(false);
+
+        saveButton.addActionListener(e -> saveToFile());
+        loadButton.addActionListener(e -> loadFromFile());
+
+        saveLoadPanel.add(saveButton);
+        saveLoadPanel.add(loadButton);
+
+        this.frame.add(saveLoadPanel);
+    }
+
+    private void saveToFile(){
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showSaveDialog(this.frame);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try (PrintWriter writer = new PrintWriter(fileChooser.getSelectedFile())) {
+                writer.print(inputArea.getText());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private void loadFromFile(){
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showOpenDialog(this.frame);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(fileChooser.getSelectedFile()))) {
+                StringBuilder content = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    content.append(line).append("\n");
+                }
+                inputArea.setText(content.toString());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     private void updateLineNumbers() {
