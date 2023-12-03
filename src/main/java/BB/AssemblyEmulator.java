@@ -36,10 +36,10 @@ public class AssemblyEmulator {
     }
 
     private void updateRegValuesInUI(){
-        this.gui.setRegValue("ax",this.memory.getRegValue("ax"));
-        this.gui.setRegValue("bx",this.memory.getRegValue("bx"));
-        this.gui.setRegValue("cx",this.memory.getRegValue("cx"));
-        this.gui.setRegValue("dx",this.memory.getRegValue("dx"));
+        this.gui.getRegistersPanel().setRegValue("ax",this.memory.getRegValue("ax"));
+        this.gui.getRegistersPanel().setRegValue("bx",this.memory.getRegValue("bx"));
+        this.gui.getRegistersPanel().setRegValue("cx",this.memory.getRegValue("cx"));
+        this.gui.getRegistersPanel().setRegValue("dx",this.memory.getRegValue("dx"));
     }
 
     public void parseCommand(String command){
