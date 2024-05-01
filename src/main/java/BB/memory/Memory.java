@@ -11,7 +11,7 @@ public class Memory {
     private FlagManager flagManager;
 
     /**
-     * Parameterless constructor
+     * Constructs a Memory object with initialized registers and a FlagManager
      */
     public Memory() {
         this.ax = new Register();

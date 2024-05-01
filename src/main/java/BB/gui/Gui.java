@@ -17,6 +17,10 @@ public class Gui {
     private final SaveAndLoadPanel saveAndLoadPanel;
     private final AssemblyEmulator assemblyEmulator;
 
+    /**
+     * Constructs a GUI for the assembly emulator
+     * @param assemblyEmulator The assembly emulator instance
+     */
     public Gui(AssemblyEmulator assemblyEmulator) {
         try {
             UIManager.setLookAndFeel( new FlatDarculaLaf() );
@@ -32,17 +36,26 @@ public class Gui {
         this.saveAndLoadPanel = new SaveAndLoadPanel(this.frame, this.inputPanel);
     }
 
+    /**
+     * Runs the GUI by creating the window and initializing the UI components
+     */
     public void run(){
         this.createWindow();
         this.createUI();
     }
 
+    /**
+     * Creates the main window for the GUI with default settings
+     */
     public void createWindow(){
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setSize(1024,768);
         this.frame.setLocationRelativeTo(null);
     }
 
+    /**
+     * Configures the layout of the user interface components and makes the main window visible
+     */
     public void createUI(){
         this.frame.setLayout(new FlowLayout(FlowLayout.CENTER,100,20));
         this.frame.setVisible(true);

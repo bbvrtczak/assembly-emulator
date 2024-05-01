@@ -20,6 +20,12 @@ public class InputPanel extends JPanel{
     private final JButton resetButton;
     private int currentLine = 0;
 
+    /**
+     * Constructs an InputPanel with specified components and layout
+     * @param frame The JFrame to which the InputPanel belongs
+     * @param assemblyEmulator The AssemblyEmulator instance
+     * @param registersPanel The RegistersPanel instance
+     */
     public InputPanel(JFrame frame, AssemblyEmulator assemblyEmulator,
                       RegistersPanel registersPanel) {
         this.frame = frame;
@@ -38,6 +44,9 @@ public class InputPanel extends JPanel{
         configureMainPanel();
     }
 
+    /**
+     * Configures the main panel by adding components and setting up action listeners
+     */
     private void configureMainPanel(){
         configureButtons();
         configureInputArea();
@@ -49,6 +58,9 @@ public class InputPanel extends JPanel{
         this.frame.add(this);
     }
 
+    /**
+     * Configures the appearance and behavior of the buttons
+     */
     private void configureButtons(){
         this.submitInputButton.setFont(new Font("Arial", Font.PLAIN, 42));
         this.resetButton.setFont(new Font("Arial", Font.PLAIN, 42));
@@ -57,6 +69,9 @@ public class InputPanel extends JPanel{
         this.resetButton.setFocusPainted(false);
     }
 
+    /**
+     * Configures the appearance and behavior of the input area
+     */
     private void configureInputArea(){
         this.inputArea.setFont(new Font("Arial", Font.PLAIN, 24));
         this.lineNumbers.setFont(new Font("Arial", Font.PLAIN, 24));
@@ -69,6 +84,9 @@ public class InputPanel extends JPanel{
         this.scrollPane.setViewportBorder(null);
     }
 
+    /**
+     * Configures action listeners for the input area and buttons
+     */
     private void configureActionListeners(){
         inputArea.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -102,6 +120,9 @@ public class InputPanel extends JPanel{
         });
     }
 
+    /**
+     * Updates the line numbers and a pointer displayed alongside the input area
+     */
     private void updateLineNumbers() {
         SwingUtilities.invokeLater(() -> {
             int lineCount = this.inputArea.getLineCount();
@@ -117,6 +138,10 @@ public class InputPanel extends JPanel{
         });
     }
 
+    /**
+     * Submits the input from the text area and parses the command accordingly
+     * @param inputArea The JTextArea containing the input
+     */
     private void submitInputAndParseCommand(JTextArea inputArea){
         String enteredCommand = inputArea.getText();
         int currentCommandStartIndex;
@@ -148,6 +173,13 @@ public class InputPanel extends JPanel{
         }
     }
 
+    /**
+     * Finds the index of the nth occurrence of a substring within a string
+     * @param str The string to search within
+     * @param substr The substring to search for
+     * @param n The ordinal number of the occurrence to find
+     * @return The index of the nth occurrence of the substring, or -1 if not found
+     */
     private int ordinalIndexOf(String str, String substr, int n) {
         int pos = str.indexOf(substr);
         while (--n > 0 && pos != -1)

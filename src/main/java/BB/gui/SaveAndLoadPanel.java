@@ -13,6 +13,11 @@ public class SaveAndLoadPanel extends JPanel{
     private final JButton saveButton;
     private final JButton loadButton;
 
+    /**
+     * Constructs a SaveAndLoadPanel with specified components and layout
+     * @param frame The JFrame to which the SaveAndLoadPanel belongs
+     * @param inputPanel The InputPanel instance
+     */
     public SaveAndLoadPanel(JFrame frame, InputPanel inputPanel) {
         this.frame = frame;
         this.inputPanel = inputPanel;
@@ -24,6 +29,9 @@ public class SaveAndLoadPanel extends JPanel{
         configureMainPanel();
     }
 
+    /**
+     * Configures the main panel by adding components and setting up action listeners
+     */
     private void configureMainPanel(){
         configureButtons();
         configureActionListeners();
@@ -31,6 +39,9 @@ public class SaveAndLoadPanel extends JPanel{
         this.frame.add(this);
     }
 
+    /**
+     * Configures the appearance and behavior of the buttons
+     */
     private void configureButtons(){
         saveButton.setFont(new Font("Arial", Font.PLAIN, 28));
         this.loadButton.setFont(new Font("Arial", Font.PLAIN, 28));
@@ -42,11 +53,17 @@ public class SaveAndLoadPanel extends JPanel{
         this.add(loadButton);
     }
 
+    /**
+     * Configures action listeners for the save and load buttons
+     */
     private void configureActionListeners(){
         saveButton.addActionListener(e -> saveToFile());
         loadButton.addActionListener(e -> loadFromFile());
     }
 
+    /**
+     * Saves the contents of the input area to a file chosen by the user
+     */
     private void saveToFile(){
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showSaveDialog(this.frame);
@@ -61,6 +78,9 @@ public class SaveAndLoadPanel extends JPanel{
         }
     }
 
+    /**
+     * Loads the contents of a selected file into the input area
+     */
     private void loadFromFile(){
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(this.frame);

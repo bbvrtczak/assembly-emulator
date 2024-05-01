@@ -1,13 +1,20 @@
 package BB.service;
 
-import BB.arithmetics.IArithmetics;
+import BB.instructions.IArithmetics;
 import BB.memory.Memory;
+import BB.memory.RegisterChecker;
 
 public class ArithmeticService implements IArithmetics {
     private final Memory memory;
+    private final RegisterChecker registerChecker;
 
+    /**
+     * Constructs a ArithmeticService object with a given Memory instance
+     * @param memory The Memory instance to be used by the TransferService
+     */
     public ArithmeticService(Memory memory) {
         this.memory = memory;
+        this.registerChecker = new RegisterChecker();
     }
 
     /**
@@ -20,6 +27,7 @@ public class ArithmeticService implements IArithmetics {
             this.memory.getFlagManager().setOverflowFlag(1);
         }
     }
+
     /**
      * Checking if new register value is positive,
      * if not, CF flag is set
@@ -62,7 +70,7 @@ public class ArithmeticService implements IArithmetics {
     @Override
     public void add(String reg1, String reg2) {
         //check whether 16-bit register is being added to 8-bit register
-        if(checkIf16BitRegTo8BitReg(reg1, reg2)){
+        if(registerChecker.checkIf16BitRegTo8BitReg(reg1, reg2)){
             return;
         }
         int reg1value = memory.getRegValue(reg1);
@@ -72,20 +80,20 @@ public class ArithmeticService implements IArithmetics {
     }
 
     @Override
-    public void add(String reg1, int value) {
+    public void add(String reg, int value) {
         //check whether 16-bit value is being added to 8-bit register
-        if(checkIf16BitValueTo8BitReg(reg1, value)){
+        if(registerChecker.checkIf16BitValueTo8BitReg(reg, value)){
             return;
         }
-        int regValue = memory.getRegValue(reg1);
+        int regValue = memory.getRegValue(reg);
         int newValue = regValue + value;
-        checkOverflowFlagAndAdd(reg1, newValue);
+        checkOverflowFlagAndAdd(reg, newValue);
     }
 
     @Override
     public void sub(String reg1, String reg2) {
         //check whether 16-bit register is being subtracted from 8-bit register
-        if(checkIf16BitRegTo8BitReg(reg1, reg2)){
+        if(registerChecker.checkIf16BitRegTo8BitReg(reg1, reg2)){
             return;
         }
         int reg1value = memory.getRegValue(reg1);
@@ -95,33 +103,13 @@ public class ArithmeticService implements IArithmetics {
     }
 
     @Override
-    public void sub(String reg1, int value) {
+    public void sub(String reg, int value) {
         //check whether 16-bit value is being subtracted from 8-bit register
-        if(checkIf16BitValueTo8BitReg(reg1, value)){
+        if(registerChecker.checkIf16BitValueTo8BitReg(reg, value)){
             return;
         }
-        int regValue = memory.getRegValue(reg1);
+        int regValue = memory.getRegValue(reg);
         int newValue = regValue - value;
-        checkCarryFlagAndSubtract(reg1, newValue);
-    }
-
-    public boolean checkIf16BitRegTo8BitReg(String reg1, String reg2){
-        if((reg1.toLowerCase().charAt(1) == 'h' ||
-                reg1.toLowerCase().charAt(1) == 'l') &&
-                (reg2.toLowerCase().charAt(1) == 'x')){
-            System.err.println("Error: Wrong registers!");
-            return true;
-        }
-        return false;
-    }
-
-    public boolean checkIf16BitValueTo8BitReg(String reg1, int value){
-        if((reg1.toLowerCase().charAt(1) == 'h' ||
-                reg1.toLowerCase().charAt(1) == 'l') &&
-                (value > 0xFF)){
-            System.err.println("Error: Wrong value!");
-            return true;
-        }
-        return false;
+        checkCarryFlagAndSubtract(reg, newValue);
     }
 }

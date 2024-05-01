@@ -24,6 +24,10 @@ public class RegistersPanel extends JPanel {
     private JLabel cxLabel;
     private JLabel dxLabel;
 
+    /**
+     * Constructs a RegistersPanel with specified components and layout
+     * @param frame The JFrame to which the RegistersPanel belongs
+     */
     public RegistersPanel(JFrame frame){
         this.frame = frame;
         this.setLayout(new GridLayout(2, 4, 50, 15));
@@ -41,6 +45,9 @@ public class RegistersPanel extends JPanel {
         configureMainPanel();
     }
 
+    /**
+     * Configures the main panel by setting up labels and panels for register values
+     */
     private void configureMainPanel(){
         configureValueLabels();
         configureRegisterLabels();
@@ -48,6 +55,9 @@ public class RegistersPanel extends JPanel {
         this.frame.add(this);
     }
 
+    /**
+     * Configures the appearance and dimensions of the register panels
+     */
     private void configureRegisterPanels(){
         this.axPanel.setPreferredSize(new Dimension(200, 100));
         this.bxPanel.setPreferredSize(new Dimension(200, 100));
@@ -65,6 +75,9 @@ public class RegistersPanel extends JPanel {
         this.add(dxPanel);
     }
 
+    /**
+     * Configures the appearance and alignment of the register value labels
+     */
     private void configureValueLabels(){
         this.axValueLabel = new JLabel("0x0000");
         this.bxValueLabel = new JLabel("0x0000");
@@ -93,6 +106,9 @@ public class RegistersPanel extends JPanel {
         dxPanel.add(this.dxValueLabel);
     }
 
+    /**
+     * Configures the appearance and alignment of the register labels
+     */
     private void configureRegisterLabels(){
         this.axLabel.setFont(new Font("Arial", Font.PLAIN, 48));
         this.bxLabel.setFont(new Font("Arial", Font.PLAIN, 48));
@@ -115,6 +131,11 @@ public class RegistersPanel extends JPanel {
         this.add(dxLabel);
     }
 
+    /**
+     * Sets the value of the specified register
+     * @param reg The register whose value will be set (e.g. "ax", "bx", "cx", "dx")
+     * @param value The value to set
+     */
     public void setRegValue(String reg, int value){
         switch(reg) {
             case "ax":
@@ -134,6 +155,9 @@ public class RegistersPanel extends JPanel {
         }
     }
 
+    /**
+     * Resets the values of all registers to zero
+     */
     public void resetRegValues(){
         this.setAxValue(0);
         this.setBxValue(0);
@@ -141,18 +165,34 @@ public class RegistersPanel extends JPanel {
         this.setDxValue(0);
     }
 
+    /**
+     * Sets the value of the AX register
+     * @param value The value to set
+     */
     private void setAxValue(int value){
         this.axValueLabel.setText(String.format("0x%04X", value));
     }
 
+    /**
+     * Sets the value of the BX register
+     * @param value The value to set
+     */
     private void setBxValue(int value){
         this.bxValueLabel.setText(String.format("0x%04X", value));
     }
 
+    /**
+     * Sets the value of the CX register
+     * @param value The value to set
+     */
     private void setCxValue(int value){
         this.cxValueLabel.setText(String.format("0x%04X", value));
     }
 
+    /**
+     * Sets the value of the DX register
+     * @param value The value to set
+     */
     private void setDxValue(int value){
         this.dxValueLabel.setText(String.format("0x%04X", value));
     }

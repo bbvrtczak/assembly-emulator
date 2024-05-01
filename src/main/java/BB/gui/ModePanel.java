@@ -11,6 +11,11 @@ public class ModePanel extends JPanel {
     private final JButton singleExecutionButton;
     private final JButton overallExecutionButton;
 
+    /**
+     * Constructs a ModePanel with specified components and layout
+     * @param frame The JFrame to which the ModePanel belongs
+     * @param assemblyEmulator The AssemblyEmulator instance
+     */
     public ModePanel(JFrame frame, AssemblyEmulator assemblyEmulator) {
         this.frame = frame;
         this.assemblyEmulator = assemblyEmulator;
@@ -22,6 +27,9 @@ public class ModePanel extends JPanel {
         configureMainPanel();
     }
 
+    /**
+     * Configures the main panel by adding components and setting up action listeners
+     */
     private void configureMainPanel(){
         configureButtons();
         configureActionListeners();
@@ -29,6 +37,9 @@ public class ModePanel extends JPanel {
         this.frame.add(this);
     }
 
+    /**
+     * Configures the appearance and behavior of the buttons
+     */
     private void configureButtons(){
         this.singleExecutionButton.setFont(new Font("Arial", Font.PLAIN, 28));
         this.overallExecutionButton.setFont(new Font("Arial", Font.PLAIN, 28));
@@ -42,6 +53,9 @@ public class ModePanel extends JPanel {
         this.add(overallExecutionButton);
     }
 
+    /**
+     * Configures action listeners for the buttons to switch parsing modes
+     */
     private void configureActionListeners(){
         singleExecutionButton.addActionListener(e -> {
             this.assemblyEmulator.setParsingMode(0);
